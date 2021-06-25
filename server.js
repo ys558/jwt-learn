@@ -35,4 +35,4 @@ function authenticateToken (req, res, next) {
 }
 
 const PORT = 3000
-app.listen(PORT, ()=> console.log(`listening on port ${PORT}`))
+app.listen(PORT, ()=> console.log(`main server run on port ${PORT}`))

@@ -11,6 +11,7 @@ app.post('/login', (req, res) => {
 
   const accessToken = generateAccessToken(user)
   const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET)
+  refreshTokens.push(refreshToken)
   res.json({ accessToken, refreshToken })
 })
 
@@ -22,7 +23,7 @@ let refreshTokens = []
 app.post('/token', (req, res) => {
   const refreshToken = req.body.token
   if (refreshToken == null) return res.sendStatus(401)
-  if (refreshTokens.includes(refreshToken)) return res.sendStatus(403)
+  if (!refreshTokens.includes(refreshToken)) return res.sendStatus(403)
   jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
     if (err) return res.sendStatus(403)
     const accessToken = generateAccessToken({ name: user.name })
@@ -30,4 +31,9 @@ app.post('/token', (req, res) => {
   })
 })
 
-app.listen(3001, ()=> console.log('run on 3001'))
+app.delete('/logout', (req, res)=>{
+  refreshTokens = refreshTokens.filter( token => token !== req.body.token)
+  res.sendStatus(204)
+})
+
+app.listen(3001, ()=> console.log('auth run on 3001'))
